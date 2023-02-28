@@ -2,15 +2,23 @@ import * as React from 'react';
 import Select from 'react-select'
 
 export const SelectVehicles = (props) =>{
-  
+
   const [selectedCode,setSelectedCode] = React.useState()
   const [selectedYears,setSelectedYears] = React.useState([])
   const [years, setYears] = React.useState()
-  const [vehicles, setVehicles] = React.useState(props.initialVehicles)
+
+  const addQualifier = () =>{
+    const qualifier = ({code:selectedCode,year:selectedYears})
+    return qualifier
+  }
+  
+  React.useEffect(() => {
+    props.getQualifier(addQualifier())
+ })
 
   const handleModelChange = (event) => {
     setSelectedCode(event.code)
-    vehicles.map((vehicle)=>{
+    props.initialVehicles.map((vehicle)=>{
       if(event.value === vehicle.name){
         setYears(
           vehicle.modelYears.map(year=>({
@@ -21,22 +29,20 @@ export const SelectVehicles = (props) =>{
       }
       return true
     })
-    console.log(event);
   }
 
   const handleYearChange = (event) => {
-      setSelectedYears(event)
+        event.map((year)=>
+          setSelectedYears([...selectedYears,year.value])
+        )
   }
-  console.log(selectedCode);
-  console.log(selectedYears);
-
   
   return(
     <>
       <div className='select-container'>
         <span>Vehicle Model:</span>
         <div style={{width:'30%'}}>
-          <Select options={vehicles} onChange={handleModelChange}/>
+          <Select options={props.initialVehicles} onChange={handleModelChange}/>
         </div>
         <span>Model Years:</span>
         <div style={{width:'50%'}}>
